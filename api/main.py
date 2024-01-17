@@ -9,7 +9,15 @@ from langchain_community.document_loaders import WebBaseLoader
 
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
-load_dotenv()
+
+if os.environ.get("HEROKU_OPENAI_API_KEY"):
+    OPENAI_API_KEY = os.environ.get("HEROKU_OPENAI_API_KEY")
+else:
+    load_dotenv()
+    OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+    if OPENAI_API_KEY == "YOUR_API_KEY":
+        raise Exception("Please set your OPENAI_API_KEY in .env file")
+
 
 app = FastAPI(
     title="LangChain Server",
@@ -19,11 +27,11 @@ app = FastAPI(
 
 add_routes(
     app,
-    ChatOpenAI(openai_api_key=os.environ.get("OPENAI_API_KEY")),
+    ChatOpenAI(openai_api_key=OPENAI_API_KEY),
     path="/openai",
 )
 
-model = ChatOpenAI(openai_api_key=os.environ.get("OPENAI_API_KEY"))
+model = ChatOpenAI(openai_api_key=OPENAI_API_KEY)
 prompt = ChatPromptTemplate.from_template("tell me a joke about {topic}")
 add_routes(
     app,
@@ -31,7 +39,7 @@ add_routes(
     path="/joke",
 )
 
-llm = ChatOpenAI(openai_api_key=os.environ.get("OPENAI_API_KEY"))
+llm = ChatOpenAI(openai_api_key=OPENAI_API_KEY)
 
 loader = WebBaseLoader("https://www.billtrust.com/about")
 docs = loader.load()
