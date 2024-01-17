@@ -44,7 +44,6 @@ llm = ChatOpenAI(openai_api_key=OPENAI_API_KEY)
 loader = WebBaseLoader("https://www.billtrust.com/about")
 docs = loader.load()
 
-embeddings = OpenAIEmbeddings()
 text_splitter = RecursiveCharacterTextSplitter()
 documents = [doc.page_content for doc in docs]
 
